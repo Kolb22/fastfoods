@@ -11,10 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @CrossOrigin({"*"})
 @RestController
@@ -43,6 +40,29 @@ public class FastFoodController {
     }
 
     @GetMapping("/fast-food")
+    public ResponseEntity<?> findAll() {
+        Map<String, Object> errorResponse = new HashMap<>();
+        List<FastFood> fastFoods;
+        List<FastFoodTO> fastFoodsTO = new ArrayList<>();
+
+        try{
+            fastFoods = fastFoodServiceFindAll.execute();
+
+            fastFoods.forEach(e -> {
+                FastFoodTO fastFoodTO = new FastFoodTO();
+                fastFoodTO.setName(e.getName());
+                fastFoodsTO.add(fastFoodTO);
+            });
+
+        } catch (Exception e){
+            errorResponse.put("error", "Something has happened trying to search the fast foods. Please try again later.");
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(fastFoodsTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/random/fast-food")
     public ResponseEntity<?> randomFastFood() {
         Map<String, Object> errorResponse = new HashMap<>();
         List<FastFood> fastFoods;
